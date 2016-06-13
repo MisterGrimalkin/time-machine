@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-ip="192.168.0.73"
+ip="192.168.1.70"
 echo
 echo "Deploying TimeMachine to $ip"
 echo
