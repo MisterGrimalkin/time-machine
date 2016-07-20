@@ -1,12 +1,16 @@
 package net.amarantha.timemachine;
 
 import com.google.inject.Singleton;
-import com.pi4j.io.gpio.*;
+import com.pi4j.io.gpio.GpioController;
+import com.pi4j.io.gpio.GpioFactory;
+import com.pi4j.io.gpio.GpioPinDigitalOutput;
+import com.pi4j.io.gpio.PinState;
 
-import static com.pi4j.io.gpio.RaspiPin.*;
+import static com.pi4j.io.gpio.RaspiPin.GPIO_00;
+import static com.pi4j.io.gpio.RaspiPin.GPIO_01;
 
 @Singleton
-public class SevenSegDisplay {
+public class SevenSegDisplay_Old {
 
     private GpioPinDigitalOutput clockPin;
     private GpioPinDigitalOutput dataPin;
@@ -15,11 +19,11 @@ public class SevenSegDisplay {
 
     private int number = 0;
 
-    public SevenSegDisplay() {
+    public SevenSegDisplay_Old() {
 
-        GpioController gpio = GpioFactory.getInstance();
-        clockPin = gpio.provisionDigitalOutputPin(GPIO_00, PinState.LOW);
-        dataPin = gpio.provisionDigitalOutputPin(GPIO_01, PinState.LOW);
+//        GpioController gpio = GpioFactory.getInstance();
+//        clockPin = gpio.provisionDigitalOutputPin(GPIO_00, PinState.LOW);
+//        dataPin = gpio.provisionDigitalOutputPin(GPIO_01, PinState.LOW);
 //        loadPin = gpio.provisionDigitalOutputPin(GPIO_02, PinState.LOW);
 //        resetPin = gpio.provisionDigitalOutputPin(GPIO_03, PinState.LOW);
 

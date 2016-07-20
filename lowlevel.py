@@ -7,9 +7,8 @@
 # high level Python port of Adafruit's NeoPixel Arduino library in strandtest.py.
 #
 # This code will animate a number of WS281x LEDs displaying rainbow colors.
-import time
-
 import _rpi_ws281x as ws
+import time
 
 # LED configuration.
 LED_CHANNEL    = 0

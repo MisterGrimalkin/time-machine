@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
-sudo java \
--client \
--Xms1g \
--Xmx1g \
--cp "/home/pi/lightboard/lib/*:/home/pi/time-machine/target/classes" \
-net.amarantha.timemachine.Main $*
+echo "Booting Time Machine"
+sudo python python/timemachine.py &
+echo
+sudo nice -n -20 java -Xms1g -Xmx1g -jar time-machine.jar
+echo

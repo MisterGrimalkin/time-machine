@@ -1,30 +1,48 @@
-import sevenseg
-import thread
-import audioplayer
+import pixeltape
+# import audioplayer
+
+# def play_audio():
+#     audio_player = audioplayer.AudioPlayer()
+#     audio_player.play_file("../audio/atest.mp3")
+#
+#
+# def count_display():
+#     seven_seg = sevenseg.SevenSeg()
+#     while True:
+#         seven_seg.count()
+
+tape = pixeltape.PixelTape()
 
 
-def play_audio():
-    audio_player = audioplayer.AudioPlayer()
-    audio_player.play_file("aphex.mp3")
+def clear():
+    tape.clear()
 
 
-def count_display():
-    seven_seg = sevenseg.SevenSeg()
-    while True:
-        seven_seg.count()
+def background_pattern():
+    tape.twinkle(50, 200, 15, 50, 100, 15, 50, 255, 20)
+
+
+def travel_pattern():
+    tape.theaterChase()
 
 
 if __name__ == '__main__':
 
-    print "Starting TimeMachine..."
+    print "Pixel Tape Active"
 
-    # thread.start_new_thread(play_audio, ())
+    tape.clear()
 
-    print "Starting Display..."
+    try:
+        while True:
+            background_pattern()
+            travel_pattern()
 
-    # thread.start_new_thread(count_display, ())
+    except KeyboardInterrupt:
+        clear()
+        print "Shut Down Pixel Tape"
 
-    while True:
-        count_display()
+    # play_audio()
 
-    print "Fuck you buddy!"
+    # while True:
+    #     pass
+
