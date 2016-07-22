@@ -1,48 +1,74 @@
+from zapper import Zapper
+import RPi.GPIO as gpio
 import pixeltape
-# import audioplayer
+import pygame
+from neopixel import *
+from threading import Thread
+import time
+from audioplayer import AudioPlayer
+from pixeltape import PixelTape
 
-# def play_audio():
-#     audio_player = audioplayer.AudioPlayer()
-#     audio_player.play_file("../audio/atest.mp3")
-#
-#
-# def count_display():
-#     seven_seg = sevenseg.SevenSeg()
-#     while True:
-#         seven_seg.count()
-
-tape = pixeltape.PixelTape()
-
-
-def clear():
-    tape.clear()
+zapper = Zapper(17)
+tape = PixelTape()
+audio = AudioPlayer()
+years = []
+durations = []
 
 
-def background_pattern():
-    tape.twinkle(50, 200, 15, 50, 100, 15, 50, 255, 20)
+def time_travel(year=-1):
+    if year == -1:
+        yearname = ""
+    else:
+        yearname = str(year)
+
+    audio.play("audio/timetravel"+yearname+".mp3")
+    tape.time_travel_pattern()
 
 
-def travel_pattern():
-    tape.theaterChase()
+def play_year(year, duration):
+    audio.play("audio/"+str(year)+".mp3")
+    tape.twinkle(duration, 50, 200, 15, 50, 100, 15, 50, 255, 20, 3)
+
+
+def add_year(year, duration):
+    global years, durations
+    years.append(year)
+    durations.append(duration)
+
+
+def start():
+
+    print "Starting Time Machine..."
+
+    add_year(1969, 61)
+    add_year(1987, 44)
+    add_year(2009, 66)
+    add_year(2015, 52)
+    add_year(2031, 50)
+    add_year(2054, 59)
+
+    year_pointer = 0
+
+    while True:
+        year = years[year_pointer]
+        duration = durations[year_pointer]
+
+        tape.fade_in(1, 80, 25, 5)
+
+        zapper.wait_for_zap()
+
+        time_travel(year)
+
+        play_year(year, duration)
+
+        time_travel()
+
+        year_pointer += 1
+        if year_pointer >= len(years):
+            year_pointer = 0
+
+    print "Done"
 
 
 if __name__ == '__main__':
-
-    print "Pixel Tape Active"
-
-    tape.clear()
-
-    try:
-        while True:
-            background_pattern()
-            travel_pattern()
-
-    except KeyboardInterrupt:
-        clear()
-        print "Shut Down Pixel Tape"
-
-    # play_audio()
-
-    # while True:
-    #     pass
-
+    start()

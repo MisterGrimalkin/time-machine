@@ -30,8 +30,32 @@ class PixelTape:
     def __init__(self):
         self.strip.begin()
 
+    def time_travel_pattern(self):
+
+        time.sleep(0.3)
+
+        self.flash(1, 0.05, 0.15, 100, 90, 200)
+
+        self.fade_in(0.2, 0, 200, 255)
+        time.sleep(0.1)
+        self.fade_out(0.3, 0, 255, 200)
+
+        self.theater_chase(duration=4.95, fade_in=2.5)
+
+        self.flash(1, 0.1, 0, 100, 100, 150)
+
+        self.theater_chase(duration=0.35, fade_in=0.02)
+
+        self.flash(1, 0.1, 0, 180, 180, 230)
+
+        self.theater_chase(duration=0.38, fade_in=0.02)
+
+        self.fade_out(3.3, 255, 255, 255)
+
+        time.sleep(1)
+
     def all_on(self, colour):
-        print TWINKLE_LED_COUNT+AMBIENT_LED_COUNT
+        # print TWINKLE_LED_COUNT+AMBIENT_LED_COUNT
         for i in range(TWINKLE_LED_COUNT + AMBIENT_LED_COUNT):
             self.strip.setPixelColor(i, colour)
 
@@ -44,16 +68,51 @@ class PixelTape:
         print "Cancel"
         self.cancelPattern = True
 
-    def theaterChase(self, wait_ms=40, iterations=10):
+    def flash(self, times, on_time, off_time, green, red, blue):
+        for i in range(times):
+            self.all_on(Color(green, red, blue))
+            time.sleep(on_time)
+            self.clear()
+            time.sleep(off_time)
+
+    def fade_in(self, duration, green, red, blue):
+        self.clear()
+        start_time = time.time()
+        while time.time() - start_time <= duration:
+            progress = (time.time() - start_time) / duration
+            g = int(progress * green)
+            r = int(progress * red)
+            b = int(progress * blue)
+            self.all_on(Color(g, r, b))
+
+    def fade_out(self, duration, green, red, blue):
+        self.all_on(Color(green, red, blue))
+        start_time = time.time()
+        while time.time() - start_time <= duration:
+            progress = 1 - ((time.time() - start_time) / duration)
+            g = int(progress * green)
+            r = int(progress * red)
+            b = int(progress * blue)
+            self.all_on(Color(g, r, b))
+
+    def theater_chase(self, duration=11, fade_in=0, wait_ms=40):
         g = 255
         r = 255
         b = 100
         d = 50
 
-        while os.path.isfile("timetravel"):
+        self.cancelPattern = False
+
+        start_time = time.time()
+
+        while not self.cancelPattern and time.time() - start_time <= duration:
+            if time.time() - start_time <= fade_in:
+                brightness = (time.time() - start_time) / fade_in
+            else:
+                brightness = 1
             for q in range(3):
                 for i in range(0, self.strip.numPixels(), 3):
-                    self.strip.setPixelColor(i+q, Color(g, r, b))
+                    self.strip.setPixelColor(i+q, Color(int(g*brightness), int(r*brightness), int(b*brightness)))
                 self.strip.show()
                 time.sleep(wait_ms/1000.0)
                 for i in range(0, self.strip.numPixels(), 3):
@@ -70,13 +129,19 @@ class PixelTape:
                 b = 0
                 d = -d
 
-    def twinkle(self, min_green, max_green, delta_g, min_red, max_red, delta_r, min_b, max_b, delta_b):
+        self.clear()
+
+    def twinkle(self, duration, min_green, max_green, delta_g, min_red, max_red, delta_r, min_b, max_b, delta_b, fade):
         green = []
         green_delta = []
         red = []
         red_delta = []
         blue = []
         blue_delta = []
+
+        start_time = time.time()
+
+        brightness = 0
 
         for i in range(self.strip.numPixels()):
             g = int(random.random() * (max_green - min_green)) + min_green
@@ -94,10 +159,18 @@ class PixelTape:
                 red_delta.append(-delta_r)
                 blue_delta.append(-delta_b)
 
-            self.strip.setPixelColor(i, Color(g, r, b))
+            self.strip.setPixelColor(i, Color(int(g*brightness), int(r*brightness), int(b*brightness)))
             self.strip.show()
 
-        while not os.path.isfile("timetravel"):
+        while time.time() - start_time <= duration:
+
+            if time.time() - start_time <= fade:
+                brightness = (time.time() - start_time) / fade
+            elif duration - (time.time() - start_time) <= fade:
+                brightness = (duration - (time.time() - start_time)) / fade
+            else:
+                brightness = 1
+
             for i in range(self.strip.numPixels()):
 
                 g = green[i] + green_delta[i]
@@ -127,8 +200,7 @@ class PixelTape:
                     blue_delta[i] = -blue_delta[i]
                 blue[i] = b
 
-                # print g, r, b
-                self.strip.setPixelColor(i, Color(g, r, b))
+                self.strip.setPixelColor(i, Color(int(g*brightness), int(r*brightness), int(b*brightness)))
                 self.strip.show()
 
     def bound(self, i):
